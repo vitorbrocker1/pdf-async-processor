@@ -1,4 +1,4 @@
-package config;
+package com.vitor.pdfapi.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;

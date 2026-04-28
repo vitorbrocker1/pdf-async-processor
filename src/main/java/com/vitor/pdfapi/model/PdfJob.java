@@ -1,8 +1,6 @@
-package model;
+package com.vitor.pdfapi.model;
 
 import jakarta.persistence.*;
-import org.hibernate.id.uuid.UuidGenerator;
-
 import java.time.Instant;
 import java.util.UUID;
 
@@ -11,8 +9,7 @@ import java.util.UUID;
 public class PdfJob {
 
     @Id
-    @GeneratedValue
-    @Column(name = "task_id", nullable = false, updatable = false)
+    @Column(name = "task_id", nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID taskId;
 
     @Column(name = "original_filename")
@@ -40,10 +37,15 @@ public class PdfJob {
     public enum Status { PENDING, PROCESSING, DONE, FAILED }
 
     @PrePersist
-    void onCreate() { this.createdAt = Instant.now(); this.updatedAt = Instant.now(); }
+    void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
 
     @PreUpdate
-    void onUpdate() { this.updatedAt = Instant.now(); }
+    void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
 
     public static PdfJob pending(UUID taskId, String filename) {
         PdfJob job = new PdfJob();
@@ -53,12 +55,12 @@ public class PdfJob {
         return job;
     }
 
-    public void markProcessing()          { this.status = Status.PROCESSING; }
-    public void markDone(String text)     { this.status = Status.DONE; this.extractedText = text; }
-    public void markFailed(String error)  { this.status = Status.FAILED; this.errorMessage = error; }
-    public void incrementAttempts()       { this.attempts++; }
+    public void markProcessing()         { this.status = Status.PROCESSING; }
+    public void markDone(String text)    { this.status = Status.DONE; this.extractedText = text; }
+    public void markFailed(String error) { this.status = Status.FAILED; this.errorMessage = error; }
+    public void incrementAttempts()      { this.attempts++; }
 
-    public UUID getTaskId()          { return taskId; }
+    public UUID getTaskId()            { return taskId; }
     public String getOriginalFilename(){ return originalFilename; }
     public Status getStatus()          { return status; }
     public String getExtractedText()   { return extractedText; }

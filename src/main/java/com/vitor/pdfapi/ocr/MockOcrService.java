@@ -1,4 +1,4 @@
-package ocr;
+package com.vitor.pdfapi.ocr;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
