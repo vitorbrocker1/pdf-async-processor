@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
-
 import java.util.UUID;
 
 @Component
@@ -27,14 +26,11 @@ public class PdfQueueService {
     public void enqueue(PdfTask task) {
         PdfJob job = PdfJob.pending(task.getTaskId(), task.getOriginalFilename());
         repository.save(job);
-
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.PDF_EXCHANGE,
                 RabbitMQConfig.PDF_ROUTING_KEY,
-                task
-        );
-
-        log.info("Tarefa {} publicada no RabbitMQ e salva no banco", task.getTaskId());
+                task);
+        log.info("Tarefa {} publicada", task.getTaskId());
     }
 
     public PdfJob getJob(UUID taskId) {
@@ -46,14 +42,12 @@ public class PdfQueueService {
     }
 
     public int mainQueueSize() {
-        var props = rabbitTemplate.execute(ch ->
-                ch.queueDeclarePassive(RabbitMQConfig.PDF_QUEUE));
+        var props = rabbitTemplate.execute(ch -> ch.queueDeclarePassive(RabbitMQConfig.PDF_QUEUE));
         return props != null ? props.getMessageCount() : -1;
     }
 
     public int deadLetterQueueSize() {
-        var props = rabbitTemplate.execute(ch ->
-                ch.queueDeclarePassive(RabbitMQConfig.PDF_DLQ));
+        var props = rabbitTemplate.execute(ch -> ch.queueDeclarePassive(RabbitMQConfig.PDF_DLQ));
         return props != null ? props.getMessageCount() : -1;
     }
 

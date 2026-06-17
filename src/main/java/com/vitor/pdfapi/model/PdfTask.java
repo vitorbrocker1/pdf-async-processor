@@ -7,7 +7,6 @@ public class PdfTask {
     private final UUID taskId;
     private final byte[] pdfBytes;
     private final String originalFilename;
-    private int attempts = 0;
 
     public PdfTask(byte[] pdfBytes, String originalFilename) {
         this.taskId = UUID.randomUUID();
@@ -18,6 +17,4 @@ public class PdfTask {
     public UUID getTaskId()            { return taskId; }
     public byte[] getPdfBytes()        { return pdfBytes; }
     public String getOriginalFilename(){ return originalFilename; }
-    public int getAttempts()           { return attempts; }
-    public void incrementAttempts()    { this.attempts++; }
 }

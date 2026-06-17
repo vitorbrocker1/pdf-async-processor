@@ -6,7 +6,6 @@ import com.vitor.pdfapi.queue.PdfQueueService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
@@ -24,15 +23,11 @@ public class PdfController {
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> upload(
             @RequestParam("file") MultipartFile file) throws IOException {
-
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Arquivo vazio"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Arquivo vazio"));
         }
-
         PdfTask task = new PdfTask(file.getBytes(), file.getOriginalFilename());
         queue.enqueue(task);
-
         return ResponseEntity.accepted().body(Map.of(
                 "taskId",  task.getTaskId().toString(),
                 "status",  "PENDING",

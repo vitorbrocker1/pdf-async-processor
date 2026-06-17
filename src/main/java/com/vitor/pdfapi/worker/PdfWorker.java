@@ -26,13 +26,13 @@ public class PdfWorker {
     }
 
     @RabbitListener(queues = RabbitMQConfig.PDF_QUEUE,
-            containerFactory = "rabbitListenerContainerFactory")
+                    containerFactory = "rabbitListenerContainerFactory")
     public void consume(PdfTask task) {
         log.info("Tarefa recebida: {}", task.getTaskId());
 
         PdfJob job = queue.getJob(task.getTaskId());
         if (job == null) {
-            log.warn("Job {} não encontrado no banco, ignorando", task.getTaskId());
+            log.warn("Job {} nao encontrado, ignorando", task.getTaskId());
             return;
         }
 
@@ -43,14 +43,12 @@ public class PdfWorker {
             String text = ocr.extractText(task.getPdfBytes());
             job.markDone(text);
             queue.saveJob(job);
-            log.info("Tarefa {} concluída", task.getTaskId());
-
+            log.info("Tarefa {} concluida", task.getTaskId());
         } catch (OcrException e) {
-            log.warn("Falha no OCR da tarefa {}: {}", task.getTaskId(), e.getMessage());
+            log.warn("Falha OCR tarefa {}: {}", task.getTaskId(), e.getMessage());
             job.incrementAttempts();
             job.markFailed(e.getMessage());
             queue.saveJob(job);
-
             throw new AmqpRejectAndDontRequeueException("OCR falhou: " + e.getMessage(), e);
         }
     }
